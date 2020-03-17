@@ -1,0 +1,67 @@
+package Analizadores;
+
+import java_cup.runtime.Symbol;
+import java.util.LinkedList;
+
+import ejemplo1.SalidaConsola;
+import AST.Expresion;
+import AST.Raiz;
+import AST.Expresiones.Aritmetica;
+import AST.Expresiones.Aritmetica.op_arit;
+import AST.Expresiones.Primitivo;
+import AST.Expresiones.Primitivo.tipo_primitivo;
+
+
+/*----------------------------------------------------------------------------*/
+parser code
+{:
+
+    public void syntax_error(Symbol s){
+        try{
+            String lexema = s.value.toString();
+            int fila = s.left;
+            int columna = s.right;
+            SalidaConsola.agregar(">>>Error Sintactico: Linea "+fila+": No se esperaba "+lexema);
+        }catch(Exception e){
+            SalidaConsola.agregar(">>>Error Sintactico: Se encontro un error de grado mayor.");
+        }
+    }
+
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception {
+        SalidaConsola.agregar(">>>Error Sintactico Linea "+s.left+": Error No Recuperado");
+    }
+:}
+
+action code
+{:
+:}
+
+/*----------------------------------------------------------------------------*/
+terminal    tk_paren1,tk_paren2,tk_suma,tk_resta,tk_mul,tk_div,tk_poten;
+terminal String  tk_id,tk_numero;
+
+non terminal String S;
+non terminal Expresion  EXP;
+
+precedence left tk_suma,tk_resta;
+precedence left tk_mul,tk_div;
+precedence left tk_poten;
+precedence left tk_paren1,tk_paren2;
+
+/*---------------------------------------------------------------------------------------*/
+start with S;
+
+
+S::= EXP:a  {:  
+                Raiz raiz=new Raiz(a,0);
+                System.out.println(raiz.operar().toString());
+            :};
+
+
+EXP::= tk_paren1 EXP:a tk_paren2    {:  RESULT=a; :}
+    |EXP:a tk_poten:b EXP:c         {:  RESULT=new Aritmetica(a,c,op_arit.POTENCIA,bleft); :}
+    |EXP:a tk_mul:b EXP:c           {:  RESULT=new Aritmetica(a,c,op_arit.MULTIPLICACION,bleft); :}
+    |EXP:a tk_div:b EXP:c           {:  RESULT=new Aritmetica(a,c,op_arit.DIVISION,bleft); :}
+    |EXP:a tk_suma:b EXP:c          {:  RESULT=new Aritmetica(a,c,op_arit.SUMA,bleft); :}
+    |EXP:a tk_resta:b EXP:c         {:  RESULT=new Aritmetica(a,c,op_arit.RESTA,bleft); :}
+    |tk_numero:a                    {:  RESULT=new Primitivo(tipo_primitivo.NUMERO,Double.parseDouble(a.toString()),aleft); :};
