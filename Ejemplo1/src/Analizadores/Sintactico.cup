@@ -11,10 +11,22 @@ import AST.Expresiones.Aritmetica.op_arit;
 import AST.Expresiones.Primitivo;
 import AST.Expresiones.Primitivo.tipo_primitivo;
 
+import AST.Entornos.Entorno;
+import AST.Expresiones.Identificador;
+import AST.Instruccion;
+import AST.Instrucciones.Declaracion;
+import AST.Instrucciones.Imprimir;
+import AST.Instrucciones.ListaDeclaracion;
+
 
 /*----------------------------------------------------------------------------*/
 parser code
 {:
+
+    Entorno ent;
+    public void setEntorno(Entorno global){
+        this.ent=global;
+    }
 
     public void syntax_error(Symbol s){
         try{
@@ -37,11 +49,17 @@ action code
 :}
 
 /*----------------------------------------------------------------------------*/
-terminal    tk_paren1,tk_paren2,tk_suma,tk_resta,tk_mul,tk_div,tk_poten;
+terminal    tk_paren1,tk_paren2,tk_suma,tk_resta,tk_mul,tk_div,tk_poten,tk_var,
+            tk_imprimir,tk_asig,tk_pyc,tk_coma;
+
 terminal String  tk_id,tk_numero;
+
 
 non terminal String S;
 non terminal Expresion  EXP;
+non terminal LinkedList<Instruccion>    LID,INSTS;
+non terminal Instruccion    DECLARACION,INST,IMPRIMIR;
+
 
 precedence left tk_suma,tk_resta;
 precedence left tk_mul,tk_div;
@@ -52,10 +70,30 @@ precedence left tk_paren1,tk_paren2;
 start with S;
 
 
-S::= EXP:a  {:  
-                Raiz raiz=new Raiz(a,0);
-                System.out.println(raiz.operar().toString());
-            :};
+S::= INSTS:a  {:  
+                Raiz raiz=new Raiz(a);
+                raiz.ejecutar(ent);
+              :};
+
+
+INSTS::=INSTS:a INST:b  {:  RESULT=a; RESULT.add(b);    :}
+    |INST:a             {:  RESULT=new LinkedList<>(); RESULT.add(a);    :};
+
+
+INST::=DECLARACION:a    {:  RESULT=a; :}
+    |IMPRIMIR:a         {:  RESULT=a; :};
+
+
+IMPRIMIR::=tk_imprimir:a tk_paren1 EXP:b tk_paren2 tk_pyc     {:  RESULT=new Imprimir(b,aleft);  :};
+
+
+DECLARACION::=LID:a tk_pyc:b    {:  RESULT=new ListaDeclaracion(a,bleft);  :};
+
+
+LID::=LID:a tk_coma tk_id:b tk_asig EXP:c   {:  RESULT=a; RESULT.add(new Declaracion(b.toString(),c,bleft));   :}
+    |LID:a tk_coma tk_id:b                  {:  RESULT=a; RESULT.add(new Declaracion(b.toString(),bleft));    :}
+    |tk_var tk_id:a tk_asig EXP:b           {:  RESULT=new LinkedList<>(); RESULT.add(new Declaracion(a.toString(),b,aleft));  :}       
+    |tk_var tk_id:a                         {:  RESULT=new LinkedList<>(); RESULT.add(new Declaracion(a.toString(),aleft));  :};
 
 
 EXP::= tk_paren1 EXP:a tk_paren2    {:  RESULT=a; :}
@@ -64,4 +102,5 @@ EXP::= tk_paren1 EXP:a tk_paren2    {:  RESULT=a; :}
     |EXP:a tk_div:b EXP:c           {:  RESULT=new Aritmetica(a,c,op_arit.DIVISION,bleft); :}
     |EXP:a tk_suma:b EXP:c          {:  RESULT=new Aritmetica(a,c,op_arit.SUMA,bleft); :}
     |EXP:a tk_resta:b EXP:c         {:  RESULT=new Aritmetica(a,c,op_arit.RESTA,bleft); :}
-    |tk_numero:a                    {:  RESULT=new Primitivo(tipo_primitivo.NUMERO,Double.parseDouble(a.toString()),aleft); :};
+    |tk_numero:a                    {:  RESULT=new Primitivo(tipo_primitivo.NUMERO,Double.parseDouble(a.toString()),aleft); :}
+    |tk_id:a                        {:  RESULT=new Identificador(a.toString(),aleft); :};

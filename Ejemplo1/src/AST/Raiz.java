@@ -1,22 +1,32 @@
 package AST;
 
-public class Raiz implements Expresion {
+import AST.Entornos.Entorno;
+import AST.Instrucciones.Imprimir;
+import AST.Instrucciones.ListaDeclaracion;
+import java.util.LinkedList;
+
+public class Raiz implements Instruccion {
     
-    public Raiz(Expresion e,int linea){
-        this.exp = e;
-        this.linea = linea;
+    private LinkedList<Instruccion> insts;
+    
+    public Raiz(LinkedList<Instruccion> insts){
+        this.insts=insts;
     }
     
-    private Expresion exp;
-    private int linea;
-
     @Override
-    public Object operar() {
-        return this.exp.operar().toString();
+    public Object ejecutar(Entorno ent) {
+        for(Instruccion ins:insts){
+            if(ins instanceof ListaDeclaracion){
+                ins.ejecutar(ent);
+            }else if(ins instanceof Imprimir){
+                ins.ejecutar(ent);
+            }
+        }
+        return null;
     }
 
     @Override
     public int getlinea() {
-        return this.linea;
+        return 0;
     }
 }

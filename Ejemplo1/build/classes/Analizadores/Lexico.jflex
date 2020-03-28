@@ -24,6 +24,13 @@ numero      = [0-9]+ "."? [0-9]*
 
 %%
 
+"var"       { return new Symbol(Simbolos.tk_var, yyline, yycolumn); }
+"imprimir"  { return new Symbol(Simbolos.tk_imprimir, yyline, yycolumn); }
+
+
+"="         { return new Symbol(Simbolos.tk_asig, yyline, yycolumn); }
+";"         { return new Symbol(Simbolos.tk_pyc, yyline, yycolumn); }
+","         { return new Symbol(Simbolos.tk_coma, yyline, yycolumn); }
 "("         { return new Symbol(Simbolos.tk_paren1, yyline, yycolumn); }
 ")"         { return new Symbol(Simbolos.tk_paren2, yyline, yycolumn); }
 "+"         { return new Symbol(Simbolos.tk_suma, yyline, yycolumn); }

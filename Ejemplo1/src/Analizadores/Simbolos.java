@@ -8,17 +8,22 @@ package Analizadores;
 /** CUP generated class containing symbol constants. */
 public class Simbolos {
   /* terminals */
+  public static final int tk_imprimir = 10;
+  public static final int tk_asig = 11;
   public static final int tk_paren2 = 3;
   public static final int tk_paren1 = 2;
+  public static final int tk_pyc = 12;
+  public static final int tk_var = 9;
   public static final int EOF = 0;
   public static final int tk_resta = 5;
   public static final int tk_div = 7;
+  public static final int tk_coma = 13;
   public static final int error = 1;
-  public static final int tk_id = 9;
+  public static final int tk_id = 14;
   public static final int tk_mul = 6;
   public static final int tk_suma = 4;
   public static final int tk_poten = 8;
-  public static final int tk_numero = 10;
+  public static final int tk_numero = 15;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -29,6 +34,11 @@ public class Simbolos {
   "tk_mul",
   "tk_div",
   "tk_poten",
+  "tk_var",
+  "tk_imprimir",
+  "tk_asig",
+  "tk_pyc",
+  "tk_coma",
   "tk_id",
   "tk_numero"
   };

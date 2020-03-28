@@ -1,5 +1,6 @@
 package AST.Expresiones;
 
+import AST.Entornos.Entorno;
 import AST.Expresion;
 import ejemplo1.SalidaConsola;
 
@@ -26,9 +27,9 @@ public class Aritmetica implements Expresion {
     }
 
     @Override
-    public Object operar() {
-        Object izq1 = (this.izq==null)?null:this.izq.operar();
-        Object der1 = (this.der==null)?null:this.der.operar();
+    public Object operar(Entorno ent) {
+        Object izq1 = (this.izq==null)?null:this.izq.operar(ent);
+        Object der1 = (this.der==null)?null:this.der.operar(ent);
 
         if(oper==op_arit.SUMA){
             if(izq1 instanceof Double && der1 instanceof Double){

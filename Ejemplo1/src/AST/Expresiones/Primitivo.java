@@ -1,5 +1,6 @@
 package AST.Expresiones;
 
+import AST.Entornos.Entorno;
 import AST.Expresion;
 
 public class Primitivo implements Expresion {
@@ -19,7 +20,7 @@ public class Primitivo implements Expresion {
     }
 
     @Override
-    public Object operar() {
+    public Object operar(Entorno ent) {
         if(tipo==tipo_primitivo.NUMERO){
             return (Double) valor;
         }
